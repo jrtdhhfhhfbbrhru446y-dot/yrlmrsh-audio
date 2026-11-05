@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; media-src 'self' blob:; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yrlmrsh Audio // Генератор Шумов и Эмбиента</title>
+    <link rel="stylesheet" href="./fonts/fonts.css">
+    <link rel="stylesheet" href="./vendor/tailwind.css">
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="./vendor/lucide.min.js"></script>
+    <script defer src="./app.js"></script>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between pb-10">
+
+    <!-- ВАЖНО ДЛЯ iOS: тег <audio> не должен иметь display:none (hidden), иначе WebKit может усыпить его при сворачивании -->
+    <audio id="iosCarrierAudio" loop playsinline webkit-playsinline preload="auto" class="ios-carrier"></audio>
+
+    <!-- Фоновый холст с пеплом и золотыми линиями Кинцуги -->
+    <canvas id="sanctuaryCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- Шапка -->
+    <header class="relative z-10 w-full kintsugi-card border-b border-white/10 px-4 sm:px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_12px_#F59E0B]"></div>
+                <div>
+                    <h1 class="font-serif-art font-bold tracking-wider text-xl sm:text-2xl text-white uppercase leading-none">
+                        Yrlmrsh Audio
+                    </h1>
+                    <p class="text-[11px] font-mono-tech text-zinc-400 mt-0.5">ФОКУС • МЕДИТАЦИЯ • ГЛУБОКИЙ СОН</p>
+                    <p class="text-[11px] font-mono-tech text-amber-400 font-semibold mt-0.5">@yrlmrsh</p>
+                </div>
+            </div>
+
+            <div class="flex items-center flex-wrap gap-3">
+                <div class="flex items-center gap-2 bg-black/50 px-3 py-1.5 rounded-xl border border-white/10">
+                    <i data-lucide="volume-2" class="w-4 h-4 text-amber-400"></i>
+                    <span class="text-[11px] font-mono-tech text-zinc-400">ОБЩАЯ:</span>
+                    <input id="sliderMasterVol" type="range" min="0.05" max="1.3" step="0.01" value="0.9" class="w-20 sm:w-24">
+                </div>
+
+                <button id="btnMasterToggle" class="px-5 py-2.5 rounded-xl text-xs font-mono-tech font-bold bg-amber-500 hover:bg-amber-400 text-black transition flex items-center gap-2 shadow-[0_0_24px_rgba(245,158,11,0.45)]">
+                    <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                    <span>ВКЛЮЧИТЬ ЗВУК</span>
+                </button>
+            </div>
+        </div>
+        <p id="audioStatus" role="alert" hidden class="text-xs text-red-300 max-w-7xl mx-auto mt-2"></p>
+</header>
+
+    <!-- Основной контент -->
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col gap-8">
+
+        <!-- 1. ГОТОВЫЕ АТМОСФЕРНЫЕ МИКСЫ (30 МИКСОВ) -->
+        <section class="flex flex-col gap-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <h2 class="text-xs font-mono-tech font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                    <i data-lucide="Flame" class="w-4 h-4"></i> 1. ГОТОВЫЕ АТМОСФЕРНЫЕ МИКСЫ (30 СЦЕН)
+                </h2>
+                <span class="text-[11px] font-mono-tech text-zinc-400">Включи готовое сочетание в один клик</span>
+            </div>
+
+            <div id="readyMixesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                <!-- Генерируется из JS -->
+            </div>
+        </section>
+
+        <!-- 2. БИБЛИОТЕКА ШУМОВ И ПРИРОДЫ (72 КАНАЛА) -->
+        <section class="flex flex-col gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-4 h-4 text-amber-400"></i>
+                    <h2 class="text-xs font-mono-tech font-bold uppercase tracking-wider text-white">
+                        2. БИБЛИОТЕКА ШУМОВ, ПРИРОДЫ И АТМОСФЕРЫ (72 ЗВУКА)
+                    </h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btnToggleNoisesPause" class="px-3 py-1.5 rounded-lg text-[11px] font-mono-tech font-bold bg-white/10 hover:bg-white/15 text-zinc-200 border border-white/10 transition flex items-center gap-1.5">
+                        <i data-lucide="pause-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span id="txtNoisesPause">ПАУЗА ШУМОВ</span>
+                    </button>
+                    <button id="btnResetNoises" class="px-3 py-1.5 rounded-lg text-[11px] font-mono-tech text-zinc-400 hover:text-white bg-white/5 border border-white/10 transition">
+                        СБРОСИТЬ В 0%
+                    </button>
+                </div>
+            </div>
+
+            <div id="noiseGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <!-- Генерируется из JS -->
+            </div>
+        </section>
+
+        <!-- 3. КАТАЛОГ МЕЛОДИЙ И ИНСТРУМЕНТОВ (48 МЕЛОДИЙ) -->
+        <section class="kintsugi-card rounded-2xl p-5 flex flex-col gap-5 border border-white/10">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                <div>
+                    <h2 class="text-xs font-mono-tech font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                        <i data-lucide="music" class="w-4 h-4"></i> 3. ВЫБОР МЕЛОДИИ И ИНСТРУМЕНТА (48 РАЗНЫХ ТЕМБРОВ И ГАРМОНИЙ)
+                    </h2>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">От фетрового пианино, виолончели и калимбы до ханга, ситара и космического органа</p>
+                </div>
+
+                <button id="btnToggleMelodyPause" class="px-3.5 py-1.5 rounded-lg text-xs font-mono-tech font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition flex items-center gap-1.5">
+                    <i data-lucide="pause-circle" class="w-4 h-4"></i>
+                    <span id="txtMelodyPause">ПАУЗА МЕЛОДИИ</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-black/40 p-4 rounded-xl border border-white/5">
+                <div>
+                    <div class="flex justify-between text-xs font-mono-tech mb-1.5">
+                        <span class="text-zinc-300">ГЛУБОКИЙ ФОН (ПЭД)</span>
+                        <span id="lblMusicPad" class="text-amber-400 font-bold">85%</span>
+                    </div>
+                    <input id="slMusicPad" type="range" min="0" max="1" step="0.01" value="0.85" class="w-full">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-mono-tech mb-1.5">
+                        <span class="text-zinc-300">СОЛИРУЮЩИЙ ИНСТРУМЕНТ</span>
+                        <span id="lblMusicPiano" class="text-amber-400 font-bold">80%</span>
+                    </div>
+                    <input id="slMusicPiano" type="range" min="0" max="1" step="0.01" value="0.80" class="w-full">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-mono-tech mb-1.5">
+                        <span class="text-zinc-300">ВОЗДУШНОЕ СИЯНИЕ (ШИММЕР)</span>
+                        <span id="lblMusicShimmer" class="text-amber-400 font-bold">40%</span>
+                    </div>
+                    <input id="slMusicShimmer" type="range" min="0" max="1" step="0.01" value="0.40" class="w-full">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-mono-tech mb-1.5">
+                        <span class="text-zinc-300">МЯГКОСТЬ ЗВУКА (ФИЛЬТР)</span>
+                        <span id="lblWarmth" class="text-amber-400 font-bold">850 Гц</span>
+                    </div>
+                    <input id="slWarmth" type="range" min="240" max="2600" step="10" value="850" class="w-full">
+                </div>
+            </div>
+
+            <div id="melodySelectorGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                <!-- Генерируется из JS -->
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>

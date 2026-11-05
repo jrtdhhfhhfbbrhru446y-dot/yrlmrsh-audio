@@ -1,0 +1,91 @@
+
+        :root {
+            --bg-obsidian: #050507;
+            --gold: #F59E0B;
+            --emerald: #10B981;
+            --amethyst: #A855F7;
+        }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            background-color: var(--bg-obsidian);
+            color: #F3F4F6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
+        .font-serif-art { font-family: 'Cormorant Garamond', serif; }
+
+        .kintsugi-card {
+            background: rgba(12, 12, 17, 0.86);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+        .kintsugi-card.active-channel {
+            border-color: rgba(245, 158, 11, 0.55);
+            box-shadow: 0 0 24px -6px rgba(245, 158, 11, 0.25);
+        }
+        .kintsugi-card.emerald-edition {
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .kintsugi-card.emerald-edition.active-channel {
+            border-color: rgba(16, 185, 129, 0.7);
+            box-shadow: 0 0 26px -5px rgba(16, 185, 129, 0.35);
+            background: linear-gradient(145deg, rgba(6, 38, 29, 0.65), rgba(12, 12, 17, 0.92));
+        }
+        .kintsugi-card.amethyst-edition {
+            border-color: rgba(168, 85, 247, 0.22);
+        }
+        .kintsugi-card.amethyst-edition.active-channel {
+            border-color: rgba(168, 85, 247, 0.75);
+            box-shadow: 0 0 26px -5px rgba(168, 85, 247, 0.38);
+            background: linear-gradient(145deg, rgba(39, 14, 62, 0.68), rgba(12, 12, 17, 0.92));
+        }
+        .kintsugi-card.fire-favorite {
+            border-color: rgba(249, 115, 22, 0.55);
+            background: linear-gradient(145deg, rgba(35, 17, 10, 0.88), rgba(12, 12, 17, 0.92));
+        }
+        .kintsugi-card.fire-favorite.active-channel {
+            border-color: #F59E0B;
+            box-shadow: 0 0 30px -4px rgba(249, 115, 22, 0.45);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.12);
+            height: 6px;
+            border-radius: 999px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -5px;
+            background-color: #F59E0B;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.85);
+            transition: transform 0.15s ease;
+        }
+        input[type="range"].slider-emerald::-webkit-slider-thumb {
+            background-color: #10B981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.9);
+        }
+        input[type="range"].slider-amethyst::-webkit-slider-thumb {
+            background-color: #A855F7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.9);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.18);
+        }
+    
+.ios-carrier{position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0.01; pointer-events:none;}
